@@ -1,34 +1,133 @@
-```markdown:/Users/unclebigbay/Desktop/1234/multi-tenant-subdomain/README.md
-### Expected Behavior Matrix
 
-#### Root Domain
-| Path | Behavior |
-|------|----------|
-| [http://localhost/](http://localhost/) | Show marketing landing page |
-| [http://localhost/login](http://localhost/login) | Redirect to `http://app.localhost/login` |
-| [http://localhost/signup](http://localhost/signup) | Redirect to `http://app.localhost/signup` |
-| [http://localhost/onboarding](http://localhost/onboarding) | Redirect to `http://app.localhost/onboarding` |
+# Multi-tenant Subdomain Application
 
+A Next.js application that demonstrates multi-tenant architecture using both subdomain-based and path-based routing.
 
-#### App Subdomain
-| Path | User State | Behavior |
-|------|------------|----------|
-| [http://app.localhost/](http://app.localhost/) | Not logged in | Redirect to `http://app.localhost/login` |
-| [http://app.localhost/](http://app.localhost/) | Logged in with default workspace (subdomain) | Redirect to `http://acme.localhost` |
-| [http://app.localhost/](http://app.localhost/) | Logged in with default workspace (no subdomain) | Redirect to `http://app.localhost/startup-inc` |
-| [http://app.localhost/login](http://app.localhost/login) | Not logged in | Show login page |
-| [http://app.localhost/login](http://app.localhost/login) | Logged in with workspace | Redirect to workspace |
-| [http://app.localhost/login](http://app.localhost/login) | Logged in without workspace | Redirect to onboarding |
-| [http://app.localhost/signup](http://app.localhost/signup) | Has default workspace | Redirect to workspace |
-| [http://app.localhost/signup](http://app.localhost/signup) | No default workspace | Show signup page |
-| [http://app.localhost/onboarding](http://app.localhost/onboarding) | Has default workspace | Redirect to workspace |
-| [http://app.localhost/onboarding](http://app.localhost/onboarding) | No default workspace | Show onboarding page |
+## Features
 
-#### Custom Subdomain
-| Path | Behavior |
-|------|----------|
-| [http://acme.localhost/](http://acme.localhost/) | Rewrite to `/acme-corp` |
-| [http://acme.localhost/settings](http://acme.localhost/settings) | Rewrite to `/acme-corp/settings` |
-| [http://acme.localhost/any-path](http://acme.localhost/any-path) | Rewrite to `/acme-corp/any-path` |
-| [http://invalid.localhost/](http://invalid.localhost/) | Redirect to 404 |
+- 🏢 Multi-tenant workspaces
+- 🔐 Workspace access control
+- 🌐 Custom subdomain support
+- 🔄 Workspace switching
+- 💳 Subscription-based features (Free/Pro plans)
+- 🛡️ Route protection
+- 🔑 Authentication flow
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- Ppnpm
+
+### Installation
+
+1. Clone the repository
+```bash
+git clone <repository-url>
+cd multi-tenant-subdomain
 ```
+
+2. Install dependencies
+```bash
+pnpm install
+```
+
+3. Start the development server
+```bash
+pnpm run dev
+```
+
+
+## Architecture Decisions
+
+### Middleware Optimization
+
+The middleware is designed to handle only routing logic without database calls. All data-dependent checks are performed in server components:
+
+- ✅ Middleware: Handles routing and basic session checks
+- ✅ Server Components: Perform:
+  - Workspace access validation
+  - Subscription status checks
+  - User membership verification
+  - Feature flag enforcement
+
+This approach:
+- Reduces middleware complexity
+- Improves response times
+- Prevents unnecessary database load
+- Centralizes access control logic
+
+## Usage
+
+### Accessing Workspaces
+
+Workspaces can be accessed in two ways:
+
+1. Subdomain-based (Pro plan):
+   - `http://workspace-subdomain.localhost`
+
+2. Path-based (Free plan):
+   - `http://app.localhost/workspace-slug`
+
+### Authentication Flow
+
+1. Users are redirected to login if not authenticated
+2. After login, users are directed to:
+   - Their default workspace if set
+   - Onboarding if no default workspace
+
+### Workspace Features
+
+- Workspace switching via dropdown
+- Subscription status indicators
+- Member role management
+- Custom subdomain configuration (Pro plan)
+
+## Project Structure
+
+```
+src/
+├── app/
+│   ├── (auth)/          # Authentication routes
+│   └── (dashboard)/     # Protected workspace routes
+├── util/
+│   ├── workspace.ts     # Workspace management
+│   ├── session.ts       # Authentication
+│   └── params.ts        # URL parameter handling
+└── middleware.ts        # Route protection & subdomain handling
+```
+
+## Technical Details
+
+- Built with Next.js 15
+- TypeScript for type safety
+- Tailwind CSS for styling
+- Server-side and client-side routing
+- Middleware for route protection
+
+## Development
+
+### Local Setup
+
+1. Add local domains to `/etc/hosts`:
+```
+127.0.0.1 localhost
+127.0.0.1 app.localhost
+127.0.0.1 acme.localhost
+```
+
+2. Run the development server:
+```bash
+pnpm run dev
+```
+
+<!-- ### Testing
+
+```bash
+pnpm run test
+``` -->
+
+## License
+
+MIT
