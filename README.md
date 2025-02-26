@@ -35,7 +35,7 @@ pnpm install
 
 3. Start the development server
 ```bash
-pnpm run dev
+pnpm run dev --port 80
 ```
 
 
